@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_screen.dart';
-import 'screens/auth_screen.dart';
-import 'providers/auth_providers.dart';
 import 'repositories/place_repository.dart';
+import 'data/seed_places.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +29,9 @@ void main() async {
   try {
     final repository = PlaceRepository();
     await repository.initializeDefaultCategories();
+    
+    // Seed places if database is empty
+    await repository.seedPlacesIfEmpty(SeedPlaces.getKigaliPlaces());
   } catch (e) {
     debugPrint('Using demo data - Firebase not available');
   }

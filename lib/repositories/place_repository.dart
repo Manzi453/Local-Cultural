@@ -62,5 +62,10 @@ class PlaceRepository {
 
   Stream<List<Category>> streamAllCategories() =>
       _firestoreService.streamAllCategories();
+
+  // ============ SEED DATA ============
+
+  Future<void> seedPlacesIfEmpty(List<Place> seedPlaces) =>
+      _firestoreService.seedPlacesIfEmpty(seedPlaces);
 }
 

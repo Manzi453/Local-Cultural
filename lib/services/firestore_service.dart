@@ -283,5 +283,38 @@ class FirestoreService {
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => Category.fromFirestore(doc)).toList());
   }
+
+  // ============ SEED DATA ============
+
+  /// Seed places to the database if no places exist
+  Future<void> seedPlacesIfEmpty(List<Place> seedPlaces) async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection(AppConstants.placesCollection)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        print('No places found in database. Seeding ${seedPlaces.length} places...');
+        
+        // Create a batch for faster writes
+        WriteBatch batch = _firestore.batch();
+        
+        for (final place in seedPlaces) {
+          DocumentReference docRef = _firestore
+              .collection(AppConstants.placesCollection)
+              .doc(place.id);
+          batch.set(docRef, place.toFirestore());
+        }
+        
+        await batch.commit();
+        print('Successfully seeded ${seedPlaces.length} places to database');
+      } else {
+        print('Places already exist in database. Skipping seed.');
+      }
+    } catch (e) {
+      print('Error seeding places: $e');
+    }
+  }
 }
 

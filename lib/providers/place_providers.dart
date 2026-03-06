@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/place_model.dart';
 import '../repositories/place_repository.dart';
+import '../data/seed_places.dart';
 
 // Repository provider
 final placeRepositoryProvider = Provider<PlaceRepository>((ref) {
@@ -9,93 +10,11 @@ final placeRepositoryProvider = Provider<PlaceRepository>((ref) {
 
 // ============ PLACES PROVIDERS ============
 
-// All places provider
+// All places provider - Uses seed data directly for demo
 final allPlacesProvider = FutureProvider<List<Place>>((ref) async {
-  final repository = ref.watch(placeRepositoryProvider);
-  try {
-    return await repository.getAllPlaces();
-  } catch (e) {
-    // Return demo data if Firebase fails
-    return _getDemoPlaces();
-  }
+  // Return seed data directly (works without Firebase)
+  return SeedPlaces.getKigaliPlaces();
 });
-
-// Demo places for when Firebase is not available
-List<Place> _getDemoPlaces() {
-  return [
-    Place(
-      id: '1',
-      name: 'Kigali Marriott Hotel',
-      description: 'Luxury hotel in the heart of Kigali',
-      categoryId: 'hotel',
-      address: 'Kigali, Rwanda',
-      latitude: -1.9536,
-      longitude: 30.0606,
-      phoneNumber: '+250 788 123 456',
-      rating: 4.5,
-      isFeatured: true,
-      createdBy: 'demo',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    Place(
-      id: '2',
-      name: 'Bourbon Coffee',
-      description: 'Popular coffee shop in Kigali',
-      categoryId: 'restaurant',
-      address: 'Kigali Heights, Kigali',
-      latitude: -1.9540,
-      longitude: 30.0590,
-      phoneNumber: '+250 788 234 567',
-      rating: 4.3,
-      createdBy: 'demo',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    Place(
-      id: '3',
-      name: 'King Faisal Hospital',
-      description: 'Leading hospital in Rwanda',
-      categoryId: 'hospital',
-      address: 'Kigali, Rwanda',
-      latitude: -1.9440,
-      longitude: 30.0440,
-      phoneNumber: '+250 788 345 678',
-      rating: 4.2,
-      createdBy: 'demo',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    Place(
-      id: '4',
-      name: 'Bank of Kigali',
-      description: 'Major bank in Rwanda',
-      categoryId: 'bank',
-      address: 'KN 4 Ave, Kigali',
-      latitude: -1.9537,
-      longitude: 30.0594,
-      phoneNumber: '+250 788 456 789',
-      rating: 4.0,
-      createdBy: 'demo',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-    Place(
-      id: '5',
-      name: 'Kigali Convention Centre',
-      description: 'Modern convention centre',
-      categoryId: 'hotel',
-      address: 'Kigali, Rwanda',
-      latitude: -1.9700,
-      longitude: 30.0500,
-      rating: 4.6,
-      isFeatured: true,
-      createdBy: 'demo',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
-  ];
-}
 
 // All places stream provider
 final placesStreamProvider = StreamProvider<List<Place>>((ref) {
@@ -115,10 +34,11 @@ final placesByCategoryStreamProvider = StreamProvider.family<List<Place>, String
   return repository.streamPlacesByCategory(categoryId);
 });
 
-// Featured places provider
+// Featured places provider - Uses seed data directly for demo
 final featuredPlacesProvider = FutureProvider<List<Place>>((ref) async {
-  final repository = ref.watch(placeRepositoryProvider);
-  return repository.getFeaturedPlaces();
+  // Get places and filter featured ones
+  final allPlaces = SeedPlaces.getKigaliPlaces();
+  return allPlaces.where((place) => place.isFeatured).toList();
 });
 
 // Single place provider
