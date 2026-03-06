@@ -12,8 +12,90 @@ final placeRepositoryProvider = Provider<PlaceRepository>((ref) {
 // All places provider
 final allPlacesProvider = FutureProvider<List<Place>>((ref) async {
   final repository = ref.watch(placeRepositoryProvider);
-  return repository.getAllPlaces();
+  try {
+    return await repository.getAllPlaces();
+  } catch (e) {
+    // Return demo data if Firebase fails
+    return _getDemoPlaces();
+  }
 });
+
+// Demo places for when Firebase is not available
+List<Place> _getDemoPlaces() {
+  return [
+    Place(
+      id: '1',
+      name: 'Kigali Marriott Hotel',
+      description: 'Luxury hotel in the heart of Kigali',
+      categoryId: 'hotel',
+      address: 'Kigali, Rwanda',
+      latitude: -1.9536,
+      longitude: 30.0606,
+      phoneNumber: '+250 788 123 456',
+      rating: 4.5,
+      isFeatured: true,
+      createdBy: 'demo',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    Place(
+      id: '2',
+      name: 'Bourbon Coffee',
+      description: 'Popular coffee shop in Kigali',
+      categoryId: 'restaurant',
+      address: 'Kigali Heights, Kigali',
+      latitude: -1.9540,
+      longitude: 30.0590,
+      phoneNumber: '+250 788 234 567',
+      rating: 4.3,
+      createdBy: 'demo',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    Place(
+      id: '3',
+      name: 'King Faisal Hospital',
+      description: 'Leading hospital in Rwanda',
+      categoryId: 'hospital',
+      address: 'Kigali, Rwanda',
+      latitude: -1.9440,
+      longitude: 30.0440,
+      phoneNumber: '+250 788 345 678',
+      rating: 4.2,
+      createdBy: 'demo',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    Place(
+      id: '4',
+      name: 'Bank of Kigali',
+      description: 'Major bank in Rwanda',
+      categoryId: 'bank',
+      address: 'KN 4 Ave, Kigali',
+      latitude: -1.9537,
+      longitude: 30.0594,
+      phoneNumber: '+250 788 456 789',
+      rating: 4.0,
+      createdBy: 'demo',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    Place(
+      id: '5',
+      name: 'Kigali Convention Centre',
+      description: 'Modern convention centre',
+      categoryId: 'hotel',
+      address: 'Kigali, Rwanda',
+      latitude: -1.9700,
+      longitude: 30.0500,
+      rating: 4.6,
+      isFeatured: true,
+      createdBy: 'demo',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+  ];
+}
 
 // All places stream provider
 final placesStreamProvider = StreamProvider<List<Place>>((ref) {
@@ -45,8 +127,13 @@ final placeByIdProvider = FutureProvider.family<Place?, String>((ref, placeId) a
   return repository.getPlaceById(placeId);
 });
 
+// ============ SEARCH & FILTER PROVIDERS ============
+
 // Search query state
 final searchQueryProvider = StateProvider<String>((ref) => '');
+
+// Selected category filter state
+final selectedCategoryFilterProvider = StateProvider<String?>((ref) => null);
 
 // Search results provider
 final searchPlacesProvider = FutureProvider<List<Place>>((ref) async {
@@ -56,7 +143,34 @@ final searchPlacesProvider = FutureProvider<List<Place>>((ref) async {
   return repository.searchPlaces(query);
 });
 
-// Selected category provider
+// Combined filtered places provider (search + category filter)
+final filteredPlacesProvider = FutureProvider<List<Place>>((ref) async {
+  final repository = ref.watch(placeRepositoryProvider);
+  final searchQuery = ref.watch(searchQueryProvider);
+  final categoryFilter = ref.watch(selectedCategoryFilterProvider);
+  
+  // Get all places
+  List<Place> places = await repository.getAllPlaces();
+  
+  // Filter by category if selected
+  if (categoryFilter != null && categoryFilter.isNotEmpty) {
+    places = places.where((place) => place.categoryId == categoryFilter).toList();
+  }
+  
+  // Filter by search query if present
+  if (searchQuery.isNotEmpty) {
+    final lowerQuery = searchQuery.toLowerCase();
+    places = places.where((place) {
+      return place.name.toLowerCase().contains(lowerQuery) ||
+          place.address.toLowerCase().contains(lowerQuery) ||
+          place.description.toLowerCase().contains(lowerQuery);
+    }).toList();
+  }
+  
+  return places;
+});
+
+// Selected category provider (for UI)
 final selectedCategoryProvider = StateProvider<String?>((ref) => null);
 
 // Place count by category

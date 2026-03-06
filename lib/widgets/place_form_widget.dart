@@ -96,6 +96,7 @@ class _PlaceFormWidgetState extends State<PlaceFormWidget> {
         rating: widget.place?.rating,
         reviewCount: widget.place?.reviewCount,
         isFeatured: _isFeatured,
+        createdBy: widget.place?.createdBy ?? 'anonymous',
         createdAt: widget.place?.createdAt ?? now,
         updatedAt: now,
       );

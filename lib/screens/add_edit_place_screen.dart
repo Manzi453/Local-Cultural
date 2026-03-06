@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/place_model.dart';
 import '../providers/place_providers.dart';
 import '../providers/category_providers.dart';
+import '../providers/auth_providers.dart';
 import '../widgets/place_form_widget.dart';
 
 class AddEditPlaceScreen extends ConsumerWidget {
@@ -16,6 +17,7 @@ class AddEditPlaceScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(allCategoriesProvider);
+    final currentUserId = ref.watch(currentUserIdProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -28,10 +30,15 @@ class AddEditPlaceScreen extends ConsumerWidget {
             categories: categories,
             onSave: (newPlace) async {
               if (place == null) {
-                // Create new place
+                // Create new place with current user's ID
+                final placeWithCreator = newPlace.copyWith(
+                  createdBy: currentUserId ?? 'anonymous',
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                );
                 final id = await ref
                     .read(placeOperationsProvider.notifier)
-                    .createPlace(newPlace);
+                    .createPlace(placeWithCreator);
                 if (id != null && context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Place created successfully')),
@@ -39,10 +46,13 @@ class AddEditPlaceScreen extends ConsumerWidget {
                   Navigator.pop(context);
                 }
               } else {
-                // Update existing place
+                // Update existing place (preserve original creator)
+                final updatedPlace = newPlace.copyWith(
+                  updatedAt: DateTime.now(),
+                );
                 final success = await ref
                     .read(placeOperationsProvider.notifier)
-                    .updatePlace(place!.id, newPlace);
+                    .updatePlace(place!.id, updatedPlace);
                 if (success && context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Place updated successfully')),

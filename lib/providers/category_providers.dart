@@ -8,10 +8,110 @@ import 'place_providers.dart';
 // All categories provider
 final allCategoriesProvider = FutureProvider<List<Category>>((ref) async {
   final repository = ref.watch(placeRepositoryProvider);
-  // Initialize default categories if needed
-  await repository.initializeDefaultCategories();
-  return repository.getAllCategories();
+  try {
+    // Initialize default categories if needed
+    await repository.initializeDefaultCategories();
+    return await repository.getAllCategories();
+  } catch (e) {
+    // Return demo categories if Firebase fails
+    return _getDemoCategories();
+  }
 });
+
+// Demo categories for when Firebase is not available
+List<Category> _getDemoCategories() {
+  final now = DateTime.now();
+  return [
+    Category(
+      id: 'restaurant',
+      name: 'Restaurants',
+      icon: 'restaurant',
+      color: 0xFFFF5722,
+      description: 'Restaurants and cafes',
+      order: 0,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    ),
+    Category(
+      id: 'hotel',
+      name: 'Hotels',
+      icon: 'hotel',
+      color: 0xFF2196F3,
+      description: 'Hotels and lodging',
+      order: 1,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    ),
+    Category(
+      id: 'hospital',
+      name: 'Hospitals',
+      icon: 'hospital',
+      color: 0xFFF44336,
+      description: 'Hospitals and clinics',
+      order: 2,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    ),
+    Category(
+      id: 'bank',
+      name: 'Banks',
+      icon: 'bank',
+      color: 0xFF4CAF50,
+      description: 'Banks and ATMs',
+      order: 3,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    ),
+    Category(
+      id: 'shopping',
+      name: 'Shopping',
+      icon: 'shopping',
+      color: 0xFF9C27B0,
+      description: 'Shopping centers and stores',
+      order: 4,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    ),
+    Category(
+      id: 'school',
+      name: 'Schools',
+      icon: 'school',
+      color: 0xFFFF9800,
+      description: 'Schools and universities',
+      order: 5,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    ),
+    Category(
+      id: 'park',
+      name: 'Parks',
+      icon: 'park',
+      color: 0xFF8BC34A,
+      description: 'Parks and recreation',
+      order: 6,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    ),
+    Category(
+      id: 'gym',
+      name: 'Fitness',
+      icon: 'gym',
+      color: 0xFF00BCD4,
+      description: 'Gyms and fitness centers',
+      order: 7,
+      isActive: true,
+      createdAt: now,
+      updatedAt: now,
+    ),
+  ];
+}
 
 // All categories stream provider
 final categoriesStreamProvider = StreamProvider<List<Category>>((ref) {

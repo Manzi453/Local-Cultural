@@ -1,195 +1,184 @@
-# Kigali City Services & Places Directory
+# 📱 Local Cultural - Kigali City Services
 
-A comprehensive mobile application for discovering and navigating to essential services and places in Kigali, Rwanda. Built with Flutter and Firebase, this app allows users to find, create, and manage listings for various categories including hospitals, police stations, libraries, restaurants, cafés, parks, and tourist attractions.
+A Flutter mobile application for discovering and managing local services in Kigali, Rwanda.
 
-## Features
+---
 
-### 🔐 Authentication
-- User registration and login with email/password
-- Email verification required for account access
-- Secure user profile management
-- Password reset functionality
+## ✅ Implemented Features
 
-### 📱 Directory & Listings
-- **Create, Read, Update, Delete** (CRUD) operations for listings
-- Search listings by name
-- Filter listings by category
-- Real-time updates with Firestore
-- User-specific listing management
+### 1. Location Listings (CRUD)
+- ✅ **Create** new listings with all required fields
+- ✅ **Read** and display all listings in a shared directory
+- ✅ **Update** listings created by the authenticated user
+- ✅ **Delete** listings created by the authenticated user
+- ✅ Real-time state-managed updates using Riverpod
 
-### 🗺️ Map Integration
-- Interactive Google Maps view
-- Location markers for all listings
-- Category-based map filtering
-- Turn-by-turn navigation integration
-- Location selection via map tap
+#### Place Fields:
+- Place/Service Name
+- Category (Hospital, Police Station, Library, Restaurant, Café, Park, Tourist Attraction)
+- Address
+- Contact Number
+- Description
+- Geographic Coordinates (Latitude & Longitude)
+- Created By (User UID)
+- Timestamp (createdAt, updatedAt)
 
-### 📋 Categories
-- Hospital
-- Police Station
-- Public Library
-- Restaurant
-- Café
-- Park
-- Tourist Attraction
-- Utility Office
+### 2. Authentication System
+- ✅ User registration with email/password
+- ✅ User login with email/password
+- ✅ Authentication state management
+- ✅ Protected routes based on auth status
 
-### ⚙️ Settings & Profile
-- User profile display
-- Location-based notification preferences
-- App information and version details
-- Sign out functionality
+### 3. Directory Search and Filtering
+- ✅ Search listings by name
+- ✅ Filter results by category
+- ✅ Dynamic filtering (search + category combined)
+- ✅ Real-time search results
 
-## Technical Implementation
+### 4. Detail Page and Map Integration
+- ✅ Detailed view for each listing
+- ✅ Embedded Google Map with location marker
+- ✅ Navigate button for turn-by-turn directions
+- ✅ Contact options (phone, email, website)
 
-### Architecture
-- **State Management**: Riverpod for reactive state management
-- **Backend**: Firebase Authentication and Cloud Firestore
-- **Maps**: Google Maps Flutter SDK
-- **Navigation**: URL Launcher for external navigation
-- **Architecture Pattern**: Clean separation of UI, business logic, and data layers
+---
 
-### Database Structure
+## 📁 Directory Structure
 
-#### Users Collection
-```dart
-{
-  "uid": "string",
-  "email": "string",
-  "displayName": "string",
-  "emailVerified": boolean,
-  "createdAt": timestamp
-}
+```
+Local-Cultural/
+├── lib/
+│   ├── main.dart                    # App entry point with auth wrapper
+│   ├── firebase_options.dart        # Firebase configuration
+│   ├── constants/
+│   │   └── app_constants.dart       # App constants
+│   ├── models/
+│   │   ├── place_model.dart         # Place data model with user management
+│   │   └── category_model.dart      # Category data model
+│   ├── providers/
+│   │   ├── auth_providers.dart      # Firebase Auth state providers
+│   │   ├── place_providers.dart     # Place state + CRUD + search/filter
+│   │   └── category_providers.dart # Category state providers
+│   ├── repositories/
+│   │   └── place_repository.dart    # Data access layer
+│   ├── screens/
+│   │   ├── auth_screen.dart         # Login/Register screen
+│   │   ├── home_screen.dart         # Main home screen
+│   │   ├── places_list_screen.dart  # Places list with search/filter
+│   │   ├── place_details_screen.dart # Place detail with map
+│   │   ├── add_edit_place_screen.dart # Add/Edit place form
+│   │   └── category_management_screen.dart # Category management
+│   ├── services/
+│   │   └── firestore_service.dart   # Firestore CRUD operations
+│   ├── theme/
+│   │   └── app_theme.dart           # Light & Dark themes
+│   └── widgets/
+│       ├── category_card.dart
+│       ├── featured_places.dart
+│       ├── map_view_widget.dart
+│       ├── place_card.dart
+│       └── place_form_widget.dart
+├── pubspec.yaml                     # Dependencies
+└── firebase.json                    # Firebase config
 ```
 
-#### Listings Collection
-```dart
-{
-  "name": "string",
-  "category": "string",
-  "address": "string",
-  "contactNumber": "string",
-  "description": "string",
-  "latitude": double,
-  "longitude": double,
-  "createdBy": "string (user uid)",
-  "timestamp": timestamp
-}
-```
+---
 
-### Key Components
-
-#### Services Layer
-- `AuthService`: Firebase Authentication operations
-- `FirestoreService`: Database CRUD operations
-- `UrlLauncherService`: External app integration
-
-#### State Management
-- `AuthNotifier`: Authentication state management
-- `ListingsNotifier`: Listing CRUD operations
-- `SearchNotifier`: Search and filter state
-
-#### UI Components
-- Authentication screens with gradient design
-- Directory with search and filtering
-- Interactive map view with markers
-- Detailed listing pages with embedded maps
-- User-friendly forms for listing management
-
-## Setup Instructions
-
-### Prerequisites
-1. Flutter SDK (>= 3.10.8)
-2. Firebase project
-3. Google Maps API key
+## ⚙️ Settings & Configuration
 
 ### Firebase Configuration
-1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Enable Authentication (Email/Password) and Firestore Database
-3. Download configuration files:
-   - Android: `google-services.json` → `android/app/`
-   - iOS: `GoogleService-Info.plist` → `ios/Runner/`
-4. Update `lib/firebase_options.dart` with your Firebase configuration
+| Platform | Project ID | App ID |
+|----------|------------|--------|
+| Android | local-cultural-75aed | 1:326246615164:android:9092df42e475713ff3e1f9 |
+| iOS | local-cultural-75aed | 1:326246615164:ios:745b34aec4483abff3e1f9 |
+| Web | local-cultural-75aed | 1:326246615164:web:eb77e513f4aa4631f3e1f9 |
 
-### Google Maps Setup
-1. Enable Google Maps SDK for Android and iOS in your Firebase project
-2. Get a Google Maps API key from [Google Cloud Console](https://console.cloud.google.com/)
-3. Add the API key to:
-   - Android: `android/app/src/main/AndroidManifest.xml`
-   - iOS: `ios/Runner/AppDelegate.swift`
+### Firestore Collections
+- **`places`** - Stores all place/location data with user ownership
+- **`categories`** - Stores category definitions
 
-### Installation
-```bash
-# Clone the repository
-git clone <repository-url>
-cd kigali-city-services
+### Default Categories
+| ID | Name | Icon | Color |
+|----|------|------|-------|
+| hospital | Hospitals | local_hospital | #E53935 |
+| police | Police Stations | local_police | #1E88E5 |
+| library | Public Libraries | local_library | #8E24AA |
+| utility | Utility Offices | account_balance | #43A047 |
+| restaurant | Restaurants | restaurant | #FF6F00 |
+| cafe | Cafés | local_cafe | #795548 |
+| park | Parks | park | #43A047 |
+| tourist | Tourist Attractions | tour | #FFD700 |
 
-# Install dependencies
-flutter pub get
-
-# Run the app
-flutter run
+### Map Settings (Kigali, Rwanda)
+```dart
+static const double kigaliLatitude = -1.9403;
+static const double kigaliLongitude = 29.8739;
+static const double defaultZoom = 13.0;
 ```
 
-## Usage
+---
 
-1. **Sign Up**: Create an account with email and password
-2. **Verify Email**: Check your email for verification link
-3. **Browse Directory**: View all listings or search/filter by category
-4. **Add Listing**: Create new service/place listings with location details
-5. **Manage Listings**: Edit or delete your own listings
-6. **Map View**: View all locations on an interactive map
-7. **Get Directions**: Launch navigation to any location
+## 📦 Dependencies
 
-## Design
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.4.9
+  google_maps_flutter: ^2.5.0
+  url_launcher: ^6.2.2
+  share_plus: ^12.0.1
+  firebase_core: ^3.8.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+```
 
-### Color Scheme
-- **Dark Blue**: Primary color (#1565C0)
-- **Light Green**: Accent color (#81C784)
-- **Sky Blue**: Background and surface colors (#87CEEB)
+---
 
-### UI Features
-- Material Design components
-- Gradient backgrounds
-- Card-based layouts
-- Responsive design
-- Loading states and error handling
+## 🚀 Getting Started
 
-## Dependencies
+1. **Install dependencies:**
+   ```bash
+   flutter pub get
+   ```
 
-See `pubspec.yaml` for complete list:
-- `flutter_riverpod`: State management
-- `firebase_core`: Firebase core
-- `firebase_auth`: Authentication
-- `cloud_firestore`: Database
-- `google_maps_flutter`: Maps integration
-- `url_launcher`: External app integration
+2. **Run the app:**
+   ```bash
+   flutter run
+   ```
 
-## Contributing
+3. **Build for production:**
+   ```bash
+   flutter build apk      # Android
+   flutter build ios      # iOS
+   flutter build web      # Web
+   ```
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+---
 
-## License
+## 🔐 User Permissions
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+| Action | Authenticated User | Non-Authenticated User |
+|--------|-------------------|----------------------|
+| View places | ✅ | ✅ |
+| Search places | ✅ | ✅ |
+| Filter by category | ✅ | ✅ |
+| View place details | ✅ | ✅ |
+| Get directions | ✅ | ✅ |
+| Add new place | ✅ | ❌ |
+| Edit own place | ✅ | ❌ |
+| Delete own place | ✅ | ❌ |
+| Manage categories | ✅ | ❌ |
 
-## Demo Video
+---
 
-A comprehensive demo video (7-12 minutes) demonstrates:
-- User authentication flow
-- Creating, editing, and deleting listings
-- Search and filtering functionality
-- Map integration and navigation
-- Real-time Firebase updates
+## 🎯 Key Features
 
-## Future Enhancements
+1. **State Management:** Riverpod for reactive state management
+2. **Authentication:** Firebase Auth with email/password
+3. **Database:** Cloud Firestore with real-time updates
+4. **Maps:** Google Maps Flutter integration
+5. **Search:** Combined search + category filtering
+6. **UI:** Material Design 3 with custom theming
 
-- Push notifications for nearby places
-- User reviews and ratings
-- Photo uploads for listings
-- Offline mode support
-- Multi-language support (Kinyarwanda, French, English)

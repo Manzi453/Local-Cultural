@@ -17,8 +17,11 @@ class Place {
   final double? rating;
   final int? reviewCount;
   final bool isFeatured;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  
+  // User management fields
+  final String createdBy;     // User UID who created the place
+  final DateTime createdAt;   // Creation timestamp
+  final DateTime updatedAt;   // Last update timestamp
 
   Place({
     required this.id,
@@ -37,6 +40,7 @@ class Place {
     this.rating,
     this.reviewCount = 0,
     this.isFeatured = false,
+    required this.createdBy,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -60,6 +64,7 @@ class Place {
       rating: (data['rating'] ?? 0.0).toDouble(),
       reviewCount: data['reviewCount'] ?? 0,
       isFeatured: data['isFeatured'] ?? false,
+      createdBy: data['createdBy'] ?? 'anonymous',
       createdAt: (data['createdAt'] != null)
           ? DateTime.fromMillisecondsSinceEpoch(data['createdAt'].millisecondsSinceEpoch)
           : DateTime.now(),
@@ -86,6 +91,7 @@ class Place {
       'rating': rating,
       'reviewCount': reviewCount,
       'isFeatured': isFeatured,
+      'createdBy': createdBy,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -108,6 +114,7 @@ class Place {
     double? rating,
     int? reviewCount,
     bool? isFeatured,
+    String? createdBy,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -128,14 +135,27 @@ class Place {
       rating: rating ?? this.rating,
       reviewCount: reviewCount ?? this.reviewCount,
       isFeatured: isFeatured ?? this.isFeatured,
+      createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
+  /// Check if the current user can edit this place
+  bool canEdit(String? currentUserId) {
+    if (currentUserId == null) return false;
+    return createdBy == currentUserId;
+  }
+
+  /// Check if the current user can delete this place
+  bool canDelete(String? currentUserId) {
+    if (currentUserId == null) return false;
+    return createdBy == currentUserId;
+  }
+
   @override
   String toString() {
-    return 'Place(id: $id, name: $name, categoryId: $categoryId, address: $address)';
+    return 'Place(id: $id, name: $name, categoryId: $categoryId, address: $address, createdBy: $createdBy)';
   }
 
   @override

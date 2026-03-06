@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/place_providers.dart';
+import '../providers/category_providers.dart';
+import '../providers/auth_providers.dart';
+import '../models/category_model.dart';
 import '../widgets/place_card.dart';
 import 'place_details_screen.dart';
 import 'add_edit_place_screen.dart';
@@ -22,6 +25,13 @@ class PlacesListScreen extends ConsumerStatefulWidget {
 class _PlacesListScreenState extends ConsumerState<PlacesListScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  String? _selectedCategoryFilter;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategoryFilter = widget.categoryId;
+  }
 
   @override
   void dispose() {
@@ -31,21 +41,29 @@ class _PlacesListScreenState extends ConsumerState<PlacesListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final categoriesAsync = ref.watch(allCategoriesProvider);
+    final currentUserId = ref.watch(currentUserIdProvider);
+    
+    // Update search and filter state
+    ref.read(searchQueryProvider.notifier).state = _searchQuery;
+    ref.read(selectedCategoryFilterProvider.notifier).state = _selectedCategoryFilter;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.categoryName ?? 'All Places'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AddEditPlaceScreen(),
-                ),
-              );
-            },
-          ),
+          if (currentUserId != null)
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddEditPlaceScreen(),
+                  ),
+                );
+              },
+            ),
         ],
       ),
       body: Column(
@@ -81,32 +99,70 @@ class _PlacesListScreenState extends ConsumerState<PlacesListScreen> {
             ),
           ),
           
+          // Category filter chips
+          categoriesAsync.when(
+            data: (categories) {
+              if (categories.isEmpty) return const SizedBox.shrink();
+              return SizedBox(
+                height: 50,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  children: [
+                    // "All" chip
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: FilterChip(
+                        label: const Text('All'),
+                        selected: _selectedCategoryFilter == null,
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedCategoryFilter = null;
+                          });
+                        },
+                      ),
+                    ),
+                    // Category chips
+                    ...categories.map((category) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: FilterChip(
+                          label: Text(category.name),
+                          selected: _selectedCategoryFilter == category.id,
+                          onSelected: (selected) {
+                            setState(() {
+                              _selectedCategoryFilter = selected ? category.id : null;
+                            });
+                          },
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              );
+            },
+            loading: () => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
+          ),
+          
+          const SizedBox(height: 8),
+          
           // Places list
           Expanded(
-            child: _buildPlacesList(),
+            child: _buildPlacesList(currentUserId),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPlacesList() {
-    final placesAsync = widget.categoryId != null
-        ? ref.watch(placesByCategoryProvider(widget.categoryId!))
-        : ref.watch(allPlacesProvider);
+  Widget _buildPlacesList(String? currentUserId) {
+    // Use filtered places provider which combines search + category filter
+    final placesAsync = ref.watch(filteredPlacesProvider);
 
     return placesAsync.when(
       data: (places) {
-        // Filter by search query
-        final filteredPlaces = _searchQuery.isEmpty
-            ? places
-            : places.where((place) {
-                return place.name.toLowerCase().contains(_searchQuery) ||
-                    place.address.toLowerCase().contains(_searchQuery) ||
-                    place.description.toLowerCase().contains(_searchQuery);
-              }).toList();
-
-        if (filteredPlaces.isEmpty) {
+        if (places.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -118,9 +174,9 @@ class _PlacesListScreenState extends ConsumerState<PlacesListScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _searchQuery.isEmpty
-                      ? 'No places found'
-                      : 'No places match "$_searchQuery"',
+                  _searchQuery.isNotEmpty || _selectedCategoryFilter != null
+                      ? 'No places match your filters'
+                      : 'No places found',
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 16,
@@ -133,17 +189,17 @@ class _PlacesListScreenState extends ConsumerState<PlacesListScreen> {
 
         return RefreshIndicator(
           onRefresh: () async {
-            if (widget.categoryId != null) {
-              ref.invalidate(placesByCategoryProvider(widget.categoryId!));
-            } else {
-              ref.invalidate(allPlacesProvider);
-            }
+            ref.invalidate(filteredPlacesProvider);
+            ref.invalidate(allPlacesProvider);
           },
           child: ListView.builder(
             padding: const EdgeInsets.only(bottom: 80),
-            itemCount: filteredPlaces.length,
+            itemCount: places.length,
             itemBuilder: (context, index) {
-              final place = filteredPlaces[index];
+              final place = places[index];
+              final canEdit = place.canEdit(currentUserId);
+              final canDelete = place.canDelete(currentUserId);
+              
               return PlaceCard(
                 place: place,
                 onTap: () {
@@ -154,15 +210,19 @@ class _PlacesListScreenState extends ConsumerState<PlacesListScreen> {
                     ),
                   );
                 },
-                onEdit: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddEditPlaceScreen(place: place),
-                    ),
-                  );
-                },
-                onDelete: () => _showDeleteDialog(place.id, place.name),
+                onEdit: canEdit
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddEditPlaceScreen(place: place),
+                          ),
+                        );
+                      }
+                    : null,
+                onDelete: canDelete
+                    ? () => _showDeleteDialog(place.id, place.name)
+                    : null,
               );
             },
           ),
@@ -179,11 +239,7 @@ class _PlacesListScreenState extends ConsumerState<PlacesListScreen> {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () {
-                if (widget.categoryId != null) {
-                  ref.invalidate(placesByCategoryProvider(widget.categoryId!));
-                } else {
-                  ref.invalidate(allPlacesProvider);
-                }
+                ref.invalidate(filteredPlacesProvider);
               },
               child: const Text('Retry'),
             ),

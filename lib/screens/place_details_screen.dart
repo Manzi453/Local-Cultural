@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/place_providers.dart';
 import '../providers/category_providers.dart';
+import '../providers/auth_providers.dart';
 import '../theme/app_theme.dart';
 import '../widgets/map_view_widget.dart';
 import 'add_edit_place_screen.dart';
@@ -18,6 +19,7 @@ class PlaceDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final placeAsync = ref.watch(placeByIdProvider(placeId));
+    final currentUserId = ref.watch(currentUserIdProvider);
 
     return placeAsync.when(
       data: (place) {
@@ -27,6 +29,9 @@ class PlaceDetailsScreen extends ConsumerWidget {
             body: const Center(child: Text('Place not found')),
           );
         }
+
+        final canEdit = place.canEdit(currentUserId);
+        final canDelete = place.canDelete(currentUserId);
 
         return Scaffold(
           body: CustomScrollView(
@@ -59,21 +64,23 @@ class PlaceDetailsScreen extends ConsumerWidget {
                       : _buildPlaceholderImage(),
                 ),
                 actions: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddEditPlaceScreen(place: place),
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _showDeleteDialog(context, ref, place.id, place.name),
-                  ),
+                  if (canEdit)
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddEditPlaceScreen(place: place),
+                          ),
+                        );
+                      },
+                    ),
+                  if (canDelete)
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => _showDeleteDialog(context, ref, place.id, place.name),
+                    ),
                 ],
               ),
 
@@ -229,7 +236,7 @@ class PlaceDetailsScreen extends ConsumerWidget {
 
                       const SizedBox(height: 24),
 
-                      // Map
+                      // Map Section
                       const Text(
                         'Location',
                         style: TextStyle(
@@ -238,6 +245,7 @@ class PlaceDetailsScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
+                      // Map with marker
                       MapViewWidget(place: place),
 
                       const SizedBox(height: 80),
@@ -363,12 +371,24 @@ class PlaceDetailsScreen extends ConsumerWidget {
     }
   }
 
+  /// Launch Google Maps with turn-by-turn directions
   Future<void> _launchMaps(double lat, double lng, String name) async {
-    final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    // Try Google Maps app first (for turn-by-turn directions)
+    final mapsUri = Uri.parse(
+      'google.navigation:q=$lat,$lng&mode=d',
     );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    
+    // Fallback to web Google Maps
+    final webUri = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng',
+    );
+    
+    // Try launching Google Maps app
+    if (await canLaunchUrl(mapsUri)) {
+      await launchUrl(mapsUri, mode: LaunchMode.externalApplication);
+    } else {
+      // Fallback to web version
+      await launchUrl(webUri, mode: LaunchMode.externalApplication);
     }
   }
 }
