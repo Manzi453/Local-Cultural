@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "326246615164",
+    "project_id": "local-cultural-75aed",
+    "storage_bucket": "local-cultural-75aed.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326246615164:android:9092df42e475713ff3e1f9",
+        "android_client_info": {
+          "package_name": "com.example.local"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeCjucBemx_3eykibtTgPSP-UVj0YliBA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
