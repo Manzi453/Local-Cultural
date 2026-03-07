@@ -31,7 +31,6 @@ class ListingService {
   Stream<List<Listing>> getListingsByUser(String userId) {
     return _firestore.collection(_listingsCollection)
         .where('createdBy', isEqualTo: userId)
-        .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => Listing.fromFirestore(doc)).toList());
   }

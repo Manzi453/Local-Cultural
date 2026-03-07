@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:local/models/listing.dart';
 import 'package:local/services/auth_service.dart';
 import 'package:local/services/listing_service.dart';
+import 'package:local/theme/app_theme.dart';
 import 'package:local/views/edit_listing_screen.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -28,14 +28,13 @@ class ListingDetailScreen extends ConsumerWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1F1A),
         title: Text(
-          'Delete Listing',
-          style: GoogleFonts.inter(color: Colors.white),
+          'Delete Place',
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
         content: Text(
-          'Are you sure you want to delete "${listing.name}"? This action cannot be undone.',
-          style: GoogleFonts.inter(color: Colors.white70),
+          'Are you sure you want to delete "${listing.name}"?\n\nThis action cannot be undone.',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         actions: [
           TextButton(
@@ -44,7 +43,10 @@ class ListingDetailScreen extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.error,
+              foregroundColor: Colors.white,
+            ),
             child: const Text('Delete'),
           ),
         ],
@@ -74,12 +76,15 @@ class ListingDetailScreen extends ConsumerWidget {
     final isOwner = currentUser?.uid == listing.createdBy;
 
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: Text(listing.name),
+        title: Text(
+          listing.name,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         actions: isOwner
             ? [
                 IconButton(
-                  icon: const Icon(Icons.edit),
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -87,10 +92,14 @@ class ListingDetailScreen extends ConsumerWidget {
                       ),
                     );
                   },
+                  icon: const Icon(Icons.edit_outlined),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () => _deleteListing(context, ref),
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: AppTheme.error,
+                  ),
                 ),
               ]
             : null,
@@ -113,7 +122,7 @@ class ListingDetailScreen extends ConsumerWidget {
                 children: [
                   TileLayer(
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.example.kigali_directory',
+                    userAgentPackageName: 'com.example.local_directory',
                   ),
                   MarkerLayer(
                     markers: [
@@ -124,10 +133,24 @@ class ListingDetailScreen extends ConsumerWidget {
                         ),
                         width: 40,
                         height: 40,
-                        child: const Icon(
-                          Icons.location_pin,
-                          color: Color(0xFF4ADE80),
-                          size: 40,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryNavy,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.shadowMedium,
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.location_on,
+                            color: Colors.white,
+                            size: 24,
+                          ),
                         ),
                       ),
                     ],
@@ -138,73 +161,80 @@ class ListingDetailScreen extends ConsumerWidget {
             
             // Navigation Button
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  onPressed: _launchMapsNavigation,
-                  icon: const Icon(Icons.directions),
-                  label: const Text('Get Directions'),
+              padding: const EdgeInsets.all(20),
+              child: ElevatedButton.icon(
+                onPressed: _launchMapsNavigation,
+                icon: const Icon(Icons.navigation_outlined),
+                label: const Text('Get Directions'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                  backgroundColor: AppTheme.primaryNavy,
+                  foregroundColor: Colors.white,
                 ),
               ),
             ),
 
             // Details Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Category Badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4ADE80).withValues(alpha: 0.2),
+                      color: AppTheme.primaryForest,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       listing.category,
-                      style: GoogleFonts.inter(
-                        color: const Color(0xFF4ADE80),
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontWeight: FontWeight.w600,
+                        fontSize: 14,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
                   // Name
                   Text(
                     listing.name,
-                    style: GoogleFonts.inter(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: Theme.of(context).textTheme.headlineLarge,
                   ),
                   const SizedBox(height: 24),
 
                   // Info Cards
-                  _buildInfoCard(Icons.location_on_outlined, 'Address', listing.address),
-                  _buildInfoCard(Icons.phone_outlined, 'Contact', listing.contactNumber),
-                  _buildInfoCard(Icons.description_outlined, 'Description', listing.description),
+                  _buildInfoCard(context, Icons.location_on_outlined, 'Location', listing.address),
+                  _buildInfoCard(context, Icons.phone_outlined, 'Contact', listing.contactNumber),
+                  _buildInfoCard(context, Icons.description_outlined, 'About', listing.description),
                   _buildInfoCard(
-                    Icons.map_outlined,
+                    context,
+                    Icons.gps_fixed_outlined,
                     'Coordinates',
                     'Lat: ${listing.coordinates.latitude.toStringAsFixed(6)}\nLng: ${listing.coordinates.longitude.toStringAsFixed(6)}',
                   ),
                   
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   
                   // Timestamp
-                  Text(
-                    'Added on ${_formatDate(listing.timestamp.toDate())}',
-                    style: GoogleFonts.inter(
-                      color: Colors.white38,
-                      fontSize: 12,
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppTheme.borderLight,
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      'Added on ${_formatDate(listing.timestamp.toDate())}',
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -214,19 +244,40 @@ class ListingDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoCard(IconData icon, String label, String value) {
+  Widget _buildInfoCard(BuildContext context, IconData icon, String label, String value) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1F1A),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white12),
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.borderLight,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.shadowLight,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: const Color(0xFF4ADE80), size: 24),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryNavy.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              color: AppTheme.primaryNavy,
+              size: 24,
+            ),
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -234,18 +285,15 @@ class ListingDetailScreen extends ConsumerWidget {
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.inter(
-                    color: Colors.white54,
-                    fontSize: 12,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: AppTheme.primaryForest,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Text(
                   value,
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),

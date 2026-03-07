@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:local/theme/app_theme.dart';
 import 'package:local/views/home_screen.dart';
 import 'package:local/views/my_listings_screen.dart';
 import 'package:local/views/map_view_screen.dart';
@@ -29,55 +29,111 @@ class MainNavigation extends ConsumerWidget {
         children: screens,
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF121512),
-          border: Border(
-            top: BorderSide(
-              color: Color(0xFF2A2F2A),
-              width: 1,
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.shadowMedium,
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                _buildNavItem(
+                  context,
+                  ref,
+                  index: 0,
+                  currentIndex: currentIndex,
+                  icon: Icons.explore_outlined,
+                  selectedIcon: Icons.explore,
+                  label: 'Discover',
+                ),
+                _buildNavItem(
+                  context,
+                  ref,
+                  index: 1,
+                  currentIndex: currentIndex,
+                  icon: Icons.list_outlined,
+                  selectedIcon: Icons.list,
+                  label: 'My Places',
+                ),
+                _buildNavItem(
+                  context,
+                  ref,
+                  index: 2,
+                  currentIndex: currentIndex,
+                  icon: Icons.map_outlined,
+                  selectedIcon: Icons.map,
+                  label: 'Map',
+                ),
+                _buildNavItem(
+                  context,
+                  ref,
+                  index: 3,
+                  currentIndex: currentIndex,
+                  icon: Icons.settings_outlined,
+                  selectedIcon: Icons.settings,
+                  label: 'Settings',
+                ),
+              ],
             ),
           ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: (index) {
-            ref.read(navigationIndexProvider.notifier).state = index;
-          },
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          selectedItemColor: const Color(0xFF4ADE80),
-          unselectedItemColor: Colors.grey[600],
-          selectedLabelStyle: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    BuildContext context,
+    WidgetRef ref, {
+    required int index,
+    required int currentIndex,
+    required IconData icon,
+    required IconData selectedIcon,
+    required String label,
+  }) {
+    final isSelected = currentIndex == index;
+    
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          ref.read(navigationIndexProvider.notifier).state = index;
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppTheme.primaryNavy : Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  isSelected ? selectedIcon : icon,
+                  color: isSelected ? Colors.white : AppTheme.textTertiary,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: isSelected ? AppTheme.primaryNavy : AppTheme.textTertiary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          unselectedLabelStyle: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-          ),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.business_outlined),
-              activeIcon: Icon(Icons.business),
-              label: 'Directory',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt_outlined),
-              activeIcon: Icon(Icons.list_alt),
-              label: 'My Listings',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map_outlined),
-              activeIcon: Icon(Icons.map),
-              label: 'Map View',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              activeIcon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
         ),
       ),
     );

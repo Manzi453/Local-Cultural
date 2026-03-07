@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:local/models/listing.dart';
 import 'package:local/services/listing_service.dart';
+import 'package:local/theme/app_theme.dart';
 import 'package:local/views/create_listing_screen.dart';
 import 'package:local/views/listing_detail_screen.dart';
 
@@ -40,337 +40,432 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  String _selectedCategory = 'All';
 
   final List<String> _categories = [
     'All',
+    'Hospital',
+    'Police Station',
+    'Library',
     'Restaurant',
+    'Café',
+    'Park',
+    'Tourist Attraction',
     'Hotel',
-    'Cafe',
-    'Shopping',
-    'Entertainment',
-    'Healthcare',
-    'Education',
-    'Government',
     'Bank',
+    'Pharmacy',
+    'Shopping Mall',
+    'School',
     'Other',
   ];
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final filteredListings = ref.watch(filteredListingsProvider);
-    final selectedCategory = ref.watch(categoryFilterProvider);
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
+        title: const Text(
+          'Local Directory',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.5,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const CreateListingScreen(),
+                ),
+              );
+            },
+            icon: Container(
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFF4ADE80),
-                borderRadius: BorderRadius.circular(8),
+                color: AppTheme.primaryNavy,
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: const Center(
-                child: Text(
-                  'K',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          // Search Header
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Search Bar
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) {
+                        ref.read(searchQueryProvider.notifier).state = value;
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Search places, businesses...',
+                        prefixIcon: Icon(
+                          Icons.search_outlined,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          size: 22,
+                        ),
+                        suffixIcon: Icon(
+                          Icons.tune_outlined,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          size: 22,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                    ),
                   ),
+                  const SizedBox(height: 24),
+                  
+                  // Categories
+                  Row(
+                    children: [
+                      Text(
+                        'Categories',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        onPressed: () {
+                          ref.read(categoryFilterProvider.notifier).state = null;
+                          _selectedCategory = 'All';
+                        },
+                        child: const Text('View All'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Category Chips
+                  SizedBox(
+                    height: 40,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _categories.length,
+                      itemBuilder: (context, index) {
+                        final category = _categories[index];
+                        final isSelected = _selectedCategory == category;
+                        
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: FilterChip(
+                            label: Text(category),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              setState(() {
+                                _selectedCategory = category;
+                                ref.read(categoryFilterProvider.notifier).state = 
+                                    category == 'All' ? null : category;
+                              });
+                            },
+                            backgroundColor: Theme.of(context).colorScheme.surface,
+                            selectedColor: AppTheme.primaryNavy,
+                            labelStyle: TextStyle(
+                              color: isSelected 
+                                  ? Colors.white 
+                                  : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                              fontWeight: FontWeight.w500,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(
+                                color: isSelected 
+                                    ? AppTheme.primaryNavy 
+                                    : Theme.of(context).colorScheme.outline,
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+          
+          // Listings Grid
+          filteredListings.when(
+            loading: () => const SliverFillRemaining(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            error: (error, stack) => SliverFillRemaining(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Something went wrong',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      error.toString(),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            Text(
-              'Kigali Directory',
-              style: GoogleFonts.inter(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
+            data: (listings) {
+              if (listings.isEmpty) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.search_off_rounded,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No places found',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Try adjusting your search or filters',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const CreateListingScreen(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.add),
+                          label: const Text('Add First Place'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              
+              return SliverPadding(
+                padding: const EdgeInsets.all(20),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.85,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final listing = listings[index];
+                      return _buildListingCard(listing);
+                    },
+                    childCount: listings.length,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListingCard(Listing listing) {
+    return Card(
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ListingDetailScreen(listing: listing),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Card Header with Icon
+            Expanded(
+              flex: 3,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: AppTheme.primaryGradient,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
+                  ),
+                ),
+                child: Icon(
+                  _getCategoryIcon(listing.category),
+                  color: Colors.white,
+                  size: 40,
+                ),
+              ),
+            ),
+            
+            // Card Content
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Category Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: CustomColors.categoryTag,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        listing.category,
+                        style: const TextStyle(
+                          color: CustomColors.categoryText,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    
+                    // Name
+                    Text(
+                      listing.name,
+                      style: Theme.of(context).textTheme.titleMedium,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    
+                    // Address
+                    Expanded(
+                      child: Text(
+                        listing.address,
+                        style: Theme.of(context).textTheme.bodySmall,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    
+                    const Spacer(),
+                    
+                    // Contact
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.phone_outlined,
+                          size: 14,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            listing.contactNumber,
+                            style: Theme.of(context).textTheme.bodySmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
-      body: Column(
-        children: [
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) {
-                ref.read(searchQueryProvider.notifier).state = value;
-              },
-              style: GoogleFonts.inter(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: 'Search listings...',
-                hintStyle: GoogleFonts.inter(color: Colors.grey[500]),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: Color(0xFF4ADE80),
-                ),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.grey),
-                        onPressed: () {
-                          _searchController.clear();
-                          ref.read(searchQueryProvider.notifier).state = '';
-                        },
-                      )
-                    : null,
-                filled: true,
-                fillColor: const Color(0xFF1A1F1A),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF2A2F2A)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF2A2F2A)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF4ADE80)),
-                ),
-              ),
-            ),
-          ),
-
-          // Category Filter
-          SizedBox(
-            height: 40,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final category = _categories[index];
-                final isSelected = (selectedCategory == null && category == 'All') ||
-                    selectedCategory == category;
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: FilterChip(
-                    label: Text(
-                      category,
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                        color: isSelected ? Colors.black : Colors.white70,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      if (category == 'All') {
-                        ref.read(categoryFilterProvider.notifier).state = null;
-                      } else {
-                        ref.read(categoryFilterProvider.notifier).state = category;
-                      }
-                    },
-                    backgroundColor: const Color(0xFF1A1F1A),
-                    selectedColor: const Color(0xFF4ADE80),
-                    checkmarkColor: Colors.black,
-                    side: BorderSide(
-                      color: isSelected
-                          ? const Color(0xFF4ADE80)
-                          : const Color(0xFF2A2F2A),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // Listings
-          Expanded(
-            child: filteredListings.when(
-              data: (listings) {
-                if (listings.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.location_off_outlined,
-                          size: 80,
-                          color: Colors.white24,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No listings found',
-                          style: GoogleFonts.inter(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white54,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Try adjusting your search or filters',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: Colors.white38,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: listings.length,
-                  itemBuilder: (context, index) {
-                    final listing = listings[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ListingDetailScreen(listing: listing),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1F1A),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFF2A2F2A)),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF4ADE80).withAlpha(26),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  _getCategoryIcon(listing.category),
-                                  color: const Color(0xFF4ADE80),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      listing.name,
-                                      style: GoogleFonts.inter(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFF4ADE80).withAlpha(26),
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: Text(
-                                            listing.category,
-                                            style: GoogleFonts.inter(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w500,
-                                              color: const Color(0xFF4ADE80),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            listing.address,
-                                            style: GoogleFonts.inter(
-                                              fontSize: 12,
-                                              color: Colors.grey[500],
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Icon(
-                                Icons.chevron_right,
-                                color: Colors.white38,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-              loading: () => const Center(
-                child: CircularProgressIndicator(color: Color(0xFF4ADE80)),
-              ),
-              error: (err, stack) => Center(
-                child: Text(
-                  'Error: $err',
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const CreateListingScreen()),
-          );
-        },
-        icon: const Icon(Icons.add),
-        label: const Text('Add Listing'),
-      ),
     );
   }
 
   IconData _getCategoryIcon(String category) {
-    switch (category) {
-      case 'Restaurant':
-        return Icons.restaurant;
-      case 'Hotel':
-        return Icons.hotel;
-      case 'Cafe':
-        return Icons.local_cafe;
-      case 'Shopping':
-        return Icons.shopping_bag;
-      case 'Entertainment':
-        return Icons.movie;
-      case 'Healthcare':
-        return Icons.local_hospital;
-      case 'Education':
-        return Icons.school;
-      case 'Government':
-        return Icons.account_balance;
-      case 'Bank':
-        return Icons.account_balance_wallet;
+    switch (category.toLowerCase()) {
+      case 'hospital':
+        return Icons.local_hospital_rounded;
+      case 'police station':
+        return Icons.local_police_rounded;
+      case 'library':
+        return Icons.menu_book_rounded;
+      case 'restaurant':
+        return Icons.restaurant_rounded;
+      case 'café':
+        return Icons.coffee_rounded;
+      case 'park':
+        return Icons.park_rounded;
+      case 'tourist attraction':
+        return Icons.camera_alt_rounded;
+      case 'hotel':
+        return Icons.hotel_rounded;
+      case 'bank':
+        return Icons.account_balance_rounded;
+      case 'pharmacy':
+        return Icons.medication_rounded;
+      case 'shopping mall':
+        return Icons.shopping_bag_rounded;
+      case 'school':
+        return Icons.school_rounded;
       default:
-        return Icons.location_on;
+        return Icons.place_rounded;
     }
   }
 }
