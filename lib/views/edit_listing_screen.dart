@@ -104,12 +104,14 @@ class EditListingScreenState extends ConsumerState<EditListingScreen> {
 
       try {
         await ref.read(listingServiceProvider).updateListing(updatedListing);
+        if (!mounted) return;
         Navigator.of(context).pop();
         Navigator.of(context).pop(); // Go back to directory
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Listing updated successfully')),
         );
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),
@@ -117,7 +119,9 @@ class EditListingScreenState extends ConsumerState<EditListingScreen> {
           ),
         );
       } finally {
-        setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
     }
   }

@@ -109,8 +109,10 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
       try {
         await ref.read(listingServiceProvider).createListing(newListing);
+        if (!mounted) return;
         Navigator.of(context).pop();
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),
@@ -118,7 +120,9 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
           ),
         );
       } finally {
-        setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
     }
   }
