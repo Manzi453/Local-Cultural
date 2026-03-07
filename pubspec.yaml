@@ -38,8 +38,12 @@ dependencies:
   # State management
   flutter_riverpod: ^2.4.9
   
-  # Google Maps
-  google_maps_flutter: ^2.5.0
+  # Google Maps (replaced with flutter_map - OpenStreetMap)
+  # google_maps_flutter: ^2.5.0
+  
+  # OpenStreetMap - Free map alternative (no API key required)
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
   
   # URL launcher
   url_launcher: ^6.2.2
@@ -55,6 +59,15 @@ dependencies:
   
   # Cloud Firestore
   cloud_firestore: ^5.4.4
+  
+  # Local storage
+  shared_preferences: ^2.2.2
+  
+  # Google Fonts
+  google_fonts: ^6.1.0
+  
+  # Geolocator for location services
+  geolocator: ^12.0.0
 
 dev_dependencies:
   flutter_test:
