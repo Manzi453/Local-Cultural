@@ -83,7 +83,7 @@ class MapViewScreen extends ConsumerWidget {
                             decoration: BoxDecoration(
                               color: AppTheme.darkSurface,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppTheme.primaryForest),
+                              border: Border.all(color: AppTheme.primaryCyan),
                             ),
                             child: Text(
                               listing.name,
@@ -98,7 +98,7 @@ class MapViewScreen extends ConsumerWidget {
                           ),
                           const Icon(
                             Icons.location_pin,
-                            color: AppTheme.primaryForest,
+                            color: AppTheme.primaryCyan,
                             size: 40,
                           ),
                         ],
@@ -111,7 +111,7 @@ class MapViewScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(
-          child: CircularProgressIndicator(color: AppTheme.primaryForest),
+          child: CircularProgressIndicator(color: AppTheme.primaryCyan),
         ),
         error: (err, stack) => Center(
           child: Text(

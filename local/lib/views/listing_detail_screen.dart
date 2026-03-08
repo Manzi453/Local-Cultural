@@ -76,7 +76,7 @@ class ListingDetailScreen extends ConsumerWidget {
     final isOwner = currentUser?.uid == listing.createdBy;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Text(
           listing.name,
@@ -136,11 +136,11 @@ class ListingDetailScreen extends ConsumerWidget {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryNavy,
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: AppTheme.shadowMedium,
+                                color: Theme.of(context).shadowColor.withValues(alpha: 0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -168,8 +168,6 @@ class ListingDetailScreen extends ConsumerWidget {
                 label: const Text('Get Directions'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 56),
-                  backgroundColor: AppTheme.primaryNavy,
-                  foregroundColor: Colors.white,
                 ),
               ),
             ),
@@ -184,7 +182,7 @@ class ListingDetailScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryForest,
+                      color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -222,10 +220,10 @@ class ListingDetailScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.surface,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppTheme.borderLight,
+                        color: Theme.of(context).dividerColor,
                         width: 1,
                       ),
                     ),
@@ -249,15 +247,15 @@ class ListingDetailScreen extends ConsumerWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppTheme.borderLight,
+          color: Theme.of(context).dividerColor,
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.shadowLight,
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -269,12 +267,12 @@ class ListingDetailScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.primaryNavy.withValues(alpha: 0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               icon,
-              color: AppTheme.primaryNavy,
+              color: Theme.of(context).colorScheme.primary,
               size: 24,
             ),
           ),
@@ -286,7 +284,7 @@ class ListingDetailScreen extends ConsumerWidget {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppTheme.primaryForest,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

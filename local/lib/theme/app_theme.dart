@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 // Modern Dark Blue & Gradient Green Theme
 class AppTheme {
-  // Primary Colors - Deep Dark Blue & Vibrant Green
-  static const Color primaryNavy = Color(0xFF0F172A); // Deep Dark Blue
-  static const Color primaryForest = Color(0xFF10B981); // Vibrant Emerald Green
-  static const Color accentBurgundy = Color(0xFF8B5CF6); // Purple Accent
+  // Primary Colors - Dark Navy & Cyan Blue
+  static const Color primaryNavy = Color(0xFF1A1A2E); // Dark Navy
+  static const Color primaryCyan = Color(0xFF0EA5E9); // Cyan Blue
+  static const Color accentBlue = Color(0xFF2563EB); // Deep Blue Accent
   
   // Dark Theme Colors
-  static const Color darkBackground = Color(0xFF0F172A); // Deep Dark Blue Background
-  static const Color darkSurface = Color(0xFF1E293B); // Dark Blue Surface
-  static const Color darkCardBackground = Color(0xFF334155); // Slate Gray Cards
+  static const Color darkBackground = Color(0xFF1A1A2E); // Dark Navy Background
+  static const Color darkSurface = Color(0xFF16213E); // Dark Blue Surface
+  static const Color darkCardBackground = Color(0xFF0F3460); // Dark Blue Cards
   static const Color darkTextPrimary = Color(0xFFFFFFFF); // White
   static const Color darkTextSecondary = Color(0xFFCBD5E1); // Light Gray
   static const Color darkTextTertiary = Color(0xFF94A3B8); // Medium Gray
@@ -63,13 +63,13 @@ class AppTheme {
   
   // Gradient Definitions
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF0F172A), Color(0xFF10B981), Color(0xFF059669)],
+    colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
   
   static const LinearGradient vibrantGradient = LinearGradient(
-    colors: [Color(0xFF10B981), Color(0xFF059669), Color(0xFF047857)],
+    colors: [Color(0xFF0EA5E9), Color(0xFF2563EB), Color(0xFF1E40AF)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
@@ -92,8 +92,8 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: const ColorScheme.dark(
-        primary: primaryNavy,
-        secondary: primaryForest,
+        primary: primaryCyan,
+        secondary: accentBlue,
         surface: darkSurface,
         error: error,
         onPrimary: Colors.white,
@@ -134,7 +134,7 @@ class AppTheme {
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryNavy,
+          backgroundColor: primaryCyan,
           foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -152,7 +152,7 @@ class AppTheme {
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: primaryNavy,
+          foregroundColor: primaryCyan,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -168,7 +168,7 @@ class AppTheme {
       // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primaryNavy,
+          foregroundColor: primaryCyan,
           side: const BorderSide(color: darkBorderMedium, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -196,7 +196,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryNavy, width: 2),
+          borderSide: const BorderSide(color: primaryCyan, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -218,7 +218,7 @@ class AppTheme {
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: darkSurface,
-        selectedItemColor: primaryNavy,
+        selectedItemColor: primaryCyan,
         unselectedItemColor: darkTextTertiary,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
@@ -234,7 +234,7 @@ class AppTheme {
       
       // Floating Action Button Theme
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: primaryNavy,
+        backgroundColor: primaryCyan,
         foregroundColor: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(
@@ -350,7 +350,7 @@ class AppTheme {
       brightness: Brightness.light,
       colorScheme: const ColorScheme.light(
         primary: primaryNavy,
-        secondary: primaryForest,
+        secondary: accentBlue,
         surface: lightSurface,
         error: error,
         onPrimary: Colors.white,
@@ -391,7 +391,7 @@ class AppTheme {
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryNavy,
+          backgroundColor: primaryCyan,
           foregroundColor: Colors.white,
           elevation: 2,
           shape: RoundedRectangleBorder(
@@ -409,7 +409,7 @@ class AppTheme {
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: primaryNavy,
+          foregroundColor: primaryCyan,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -425,7 +425,7 @@ class AppTheme {
       // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primaryNavy,
+          foregroundColor: primaryCyan,
           side: const BorderSide(color: lightBorderMedium, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -453,7 +453,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryNavy, width: 2),
+          borderSide: const BorderSide(color: primaryCyan, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -475,7 +475,7 @@ class AppTheme {
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: lightSurface,
-        selectedItemColor: primaryNavy,
+        selectedItemColor: primaryCyan,
         unselectedItemColor: lightTextTertiary,
         type: BottomNavigationBarType.fixed,
         elevation: 2,
@@ -491,7 +491,7 @@ class AppTheme {
       
       // Floating Action Button Theme
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: primaryNavy,
+        backgroundColor: primaryCyan,
         foregroundColor: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(
@@ -603,11 +603,11 @@ class AppTheme {
 
 // Custom Colors for Specific Use Cases
 class CustomColors {
-  static const Color categoryTag = Color(0xFF10B981); // Emerald Green Background
+  static const Color categoryTag = Color(0xFF0EA5E9); // Cyan Background
   static const Color categoryText = Color(0xFFFFFFFF); // White Text
   static const Color ratingStar = Color(0xFFF59E0B); // Amber
-  static const Color onlineIndicator = Color(0xFF10B981); // Emerald Green
+  static const Color onlineIndicator = Color(0xFF0EA5E9); // Cyan
   static const Color offlineIndicator = Color(0xFF64748B); // Slate Gray
-  static const Color premiumBadge = Color(0xFF10B981); // Emerald Green Background
+  static const Color premiumBadge = Color(0xFF0EA5E9); // Cyan Background
   static const Color premiumText = Color(0xFFFFFFFF); // White Text
 }

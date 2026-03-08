@@ -65,7 +65,7 @@ class MyListingsScreen extends ConsumerWidget {
                   Icon(
                     Icons.folder_outlined,
                     size: 80,
-                    color: AppTheme.darkTextTertiary,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -73,7 +73,7 @@ class MyListingsScreen extends ConsumerWidget {
                     style: GoogleFonts.inter(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.darkTextSecondary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -81,7 +81,7 @@ class MyListingsScreen extends ConsumerWidget {
                     'Create your first listing',
                     style: GoogleFonts.inter(
                       fontSize: 14,
-                      color: AppTheme.darkTextTertiary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -116,9 +116,9 @@ class MyListingsScreen extends ConsumerWidget {
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1F1A),
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white12),
+                    border: Border.all(color: Theme.of(context).dividerColor),
                   ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(16),
@@ -126,12 +126,12 @@ class MyListingsScreen extends ConsumerWidget {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF4ADE80).withValues(alpha: 0.1),
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.location_on,
-                        color: Color(0xFF4ADE80),
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     title: Text(
@@ -139,7 +139,7 @@ class MyListingsScreen extends ConsumerWidget {
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     subtitle: Padding(
@@ -148,13 +148,13 @@ class MyListingsScreen extends ConsumerWidget {
                         listing.category,
                         style: GoogleFonts.inter(
                           fontSize: 14,
-                          color: AppTheme.darkTextSecondary,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                       ),
                     ),
-                    trailing: const Icon(
+                    trailing: Icon(
                       Icons.chevron_right,
-                      color: AppTheme.darkTextTertiary,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -162,8 +162,8 @@ class MyListingsScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppTheme.primaryForest),
+        loading: () => Center(
+          child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
         ),
         error: (err, stack) => Center(
           child: Text(
