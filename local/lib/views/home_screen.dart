@@ -75,7 +75,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text(
-          'Local Directory',
+          'Kigali Directory',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             letterSpacing: -0.5,

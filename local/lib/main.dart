@@ -9,7 +9,6 @@ import 'views/auth_wrapper.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print('App started successfully');
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -21,7 +20,7 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     
     return MaterialApp(
-      title: 'Local Directory',
+      title: 'Kigali Directory',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

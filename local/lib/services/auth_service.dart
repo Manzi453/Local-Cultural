@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
@@ -26,8 +25,7 @@ class AuthService {
       await credential.user?.sendEmailVerification();
       return credential.user;
     } on firebase_auth.FirebaseAuthException catch (e) {
-      debugPrint(e.message);
-      rethrow;
+      throw _getAuthErrorMessage(e.code);
     }
   }
 
@@ -40,8 +38,34 @@ class AuthService {
       );
       return credential.user;
     } on firebase_auth.FirebaseAuthException catch (e) {
-      debugPrint(e.message);
-      rethrow;
+      throw _getAuthErrorMessage(e.code);
+    }
+  }
+
+  String _getAuthErrorMessage(String code) {
+    switch (code) {
+      case 'email-already-in-use':
+        return 'This email is already registered';
+      case 'invalid-email':
+        return 'Invalid email address';
+      case 'operation-not-allowed':
+        return 'Operation not allowed';
+      case 'weak-password':
+        return 'Password is too weak';
+      case 'user-disabled':
+        return 'This account has been disabled';
+      case 'user-not-found':
+        return 'No account found with this email';
+      case 'wrong-password':
+        return 'Incorrect password';
+      case 'invalid-credential':
+        return 'Invalid email or password';
+      case 'too-many-requests':
+        return 'Too many attempts. Please try again later';
+      case 'network-request-failed':
+        return 'Network error. Check your connection';
+      default:
+        return 'Authentication failed. Please try again';
     }
   }
 
