@@ -364,9 +364,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Expanded(
               flex: 4,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // Category Badge
                     Container(
@@ -387,28 +388,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     
                     // Name
                     Text(
                       listing.name,
                       style: Theme.of(context).textTheme.titleMedium,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     
                     // Address
-                    Expanded(
-                      child: Text(
-                        listing.address,
-                        style: Theme.of(context).textTheme.bodySmall,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    Text(
+                      listing.address,
+                      style: Theme.of(context).textTheme.bodySmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    
-                    const Spacer(),
+                    const SizedBox(height: 4),
                     
                     // Contact
                     Row(
