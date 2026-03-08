@@ -112,35 +112,30 @@ class DataSeeder {
 
   Future<void> seedSampleData() async {
     try {
-      // Get current user or create a test user
       User? user = _authService.currentUser;
       
       if (user == null) {
-        // If no user is logged in, we'll use a placeholder user ID
-        // In a real app, you might want to handle this differently
         debugPrint('❌ No user logged in. Please login first to seed data.');
         return;
       }
 
       debugPrint('✅ User authenticated: ${user.email} (UID: ${user.uid})');
-      debugPrint('📱 Seeding sample listings for user: ${user.email}');
+      debugPrint('📱 Seeding sample listings as system data');
 
-      // Check if data already exists
-      debugPrint('🔍 Checking if data already exists...');
+      debugPrint('🔍 Checking if system data already exists...');
       final existingSnapshot = await _firestore
           .collection(_listingsCollection)
-          .where('createdBy', isEqualTo: user.uid)
+          .where('createdBy', isEqualTo: 'system')
           .limit(1)
           .get();
 
-      debugPrint('📊 Existing documents found: ${existingSnapshot.docs.length}');
+      debugPrint('📊 Existing system documents found: ${existingSnapshot.docs.length}');
       
       if (existingSnapshot.docs.isNotEmpty) {
-        debugPrint('⚠️ Sample data already exists for this user. Skipping seeding.');
+        debugPrint('⚠️ System sample data already exists. Skipping seeding.');
         return;
       }
 
-      // Add sample listings
       debugPrint('📝 Creating batch write for ${_sampleListings.length} listings...');
       final batch = _firestore.batch();
       
@@ -154,7 +149,7 @@ class DataSeeder {
           contactNumber: sampleListing['contactNumber'],
           description: sampleListing['description'],
           coordinates: sampleListing['coordinates'],
-          createdBy: user.uid,
+          createdBy: 'system',
           timestamp: Timestamp.now(),
         );
         
@@ -211,14 +206,14 @@ class DataSeeder {
 
       final snapshot = await _firestore
           .collection(_listingsCollection)
-          .where('createdBy', isEqualTo: user.uid)
+          .where('createdBy', isEqualTo: 'system')
           .get();
 
       if (snapshot.docs.isEmpty) {
-        debugPrint('No listings found. Seeding sample data...');
+        debugPrint('No system listings found. Seeding sample data...');
         await seedSampleData();
       } else {
-        debugPrint('User already has ${snapshot.docs.length} listings.');
+        debugPrint('System data already exists with ${snapshot.docs.length} listings.');
       }
       
     } catch (e) {

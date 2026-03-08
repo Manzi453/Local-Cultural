@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local/services/auth_service.dart';
+import 'package:local/services/data_seeder.dart';
 import 'package:local/views/main_navigation.dart';
 import 'package:local/views/login_screen.dart';
 import 'package:local/views/verify_email_screen.dart';
@@ -13,6 +14,11 @@ class AuthWrapper extends ConsumerWidget {
     final authState = ref.watch(authStateChangesProvider);
     ref.listen(authStateChangesProvider, (previous, next) {
       ref.read(authServiceProvider).resetSessionTimer();
+      next.whenData((user) {
+        if (user != null && user.emailVerified) {
+          DataSeeder().seedIfEmpty();
+        }
+      });
     });
 
     return authState.when(
@@ -24,7 +30,6 @@ class AuthWrapper extends ConsumerWidget {
             return const VerifyEmailScreen();
           }
         } else {
-          // User is not logged in, show login screen
           return LoginScreen();
         }
       },
