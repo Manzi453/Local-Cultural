@@ -149,12 +149,12 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 style: GoogleFonts.inter(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
-                  colors: [Color(0xFF4ADE80), Color(0xFF22C55E)],
+                  colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)],
                 ).createShader(bounds),
                 child: Text(
                   'new listing.',
@@ -170,7 +170,7 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 'Fill in the details below to add a new place or service.',
                 style: GoogleFonts.inter(
                   fontSize: 14,
-                  color: Colors.white54,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
               const SizedBox(height: 32),
@@ -178,10 +178,10 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               // Name Field
               TextFormField(
                 controller: _nameController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                decoration: InputDecoration(
                   hintText: 'Place/Service Name',
-                  prefixIcon: Icon(Icons.business_outlined, color: Colors.white38),
+                  prefixIcon: Icon(Icons.business_outlined, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter a name' : null,
@@ -191,11 +191,11 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               // Category Dropdown
               DropdownButtonFormField<String>(
                 initialValue: _selectedCategory,
-                dropdownColor: const Color(0xFF1A1F1A),
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                dropdownColor: Theme.of(context).colorScheme.surface,
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                decoration: InputDecoration(
                   hintText: 'Select Category',
-                  prefixIcon: Icon(Icons.category_outlined, color: Colors.white38),
+                  prefixIcon: Icon(Icons.category_outlined, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
                 items: _categories.map((String category) {
                   return DropdownMenuItem<String>(
@@ -216,10 +216,10 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               // Address Field
               TextFormField(
                 controller: _addressController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                decoration: InputDecoration(
                   hintText: 'Address',
-                  prefixIcon: Icon(Icons.location_on_outlined, color: Colors.white38),
+                  prefixIcon: Icon(Icons.location_on_outlined, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter an address' : null,
@@ -229,10 +229,10 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               // Contact Field
               TextFormField(
                 controller: _contactController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                decoration: InputDecoration(
                   hintText: 'Contact Number',
-                  prefixIcon: Icon(Icons.phone_outlined, color: Colors.white38),
+                  prefixIcon: Icon(Icons.phone_outlined, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                 ),
                 keyboardType: TextInputType.phone,
                 validator: (value) =>
@@ -243,13 +243,13 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               // Description Field
               TextFormField(
                 controller: _descriptionController,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 maxLines: 3,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Description',
                   prefixIcon: Padding(
                     padding: EdgeInsets.only(bottom: 48),
-                    child: Icon(Icons.description_outlined, color: Colors.white38),
+                    child: Icon(Icons.description_outlined, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                   ),
                 ),
                 validator: (value) =>
@@ -261,23 +261,23 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A1F1A),
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white12),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.map_outlined, color: Color(0xFF4ADE80)),
+                        Icon(Icons.map_outlined, color: Theme.of(context).colorScheme.primary),
                         const SizedBox(width: 12),
                         Text(
                           'Geographic Coordinates',
                           style: GoogleFonts.inter(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -287,7 +287,7 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                       'Enter coordinates manually or select on map',
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: Colors.white38,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -298,13 +298,13 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _latitudeController,
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                             decoration: InputDecoration(
                               hintText: 'Latitude',
-                              hintStyle: const TextStyle(color: Colors.white38),
+                              hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                               filled: true,
-                              fillColor: const Color(0xFF0A0F0A),
+                              fillColor: Theme.of(context).colorScheme.surface,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
@@ -316,13 +316,13 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _longitudeController,
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                             keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                             decoration: InputDecoration(
                               hintText: 'Longitude',
-                              hintStyle: const TextStyle(color: Colors.white38),
+                              hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                               filled: true,
-                              fillColor: const Color(0xFF0A0F0A),
+                              fillColor: Theme.of(context).colorScheme.surface,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
@@ -364,7 +364,7 @@ class CreateListingScreenState extends ConsumerState<CreateListingScreen> {
                 width: double.infinity,
                 height: 56,
                 child: _isLoading
-                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF4ADE80)))
+                    ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
                     : ElevatedButton(
                         onPressed: _submit,
                         child: Row(
