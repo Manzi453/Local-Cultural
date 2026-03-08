@@ -55,6 +55,9 @@ class VerifyEmailScreen extends ConsumerWidget {
                 child: ElevatedButton(
                   onPressed: () async {
                     await ref.read(authServiceProvider).signOut();
+                    if (context.mounted) {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    }
                   },
                   child: const Text('Back to Login'),
                 ),
