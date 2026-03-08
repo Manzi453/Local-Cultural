@@ -103,7 +103,7 @@ class MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Location'),
+        title: const Text('Select Location on Map'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -116,7 +116,12 @@ class MapScreenState extends State<MapScreen> {
             options: MapOptions(
               initialCenter: _selectedLocation,
               initialZoom: 13,
+              minZoom: 5,
+              maxZoom: 18,
               onTap: _onMapTapped,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all,
+              ),
             ),
             children: [
               TileLayer(
@@ -139,6 +144,40 @@ class MapScreenState extends State<MapScreen> {
                 ],
               ),
             ],
+          ),
+          // Zoom controls
+          Positioned(
+            right: 16,
+            top: 100,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: 'zoom_in',
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  onPressed: () {
+                    _mapController.move(
+                      _mapController.camera.center,
+                      _mapController.camera.zoom + 1,
+                    );
+                  },
+                  child: const Icon(Icons.add, color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: 'zoom_out',
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  onPressed: () {
+                    _mapController.move(
+                      _mapController.camera.center,
+                      _mapController.camera.zoom - 1,
+                    );
+                  },
+                  child: const Icon(Icons.remove, color: Colors.white),
+                ),
+              ],
+            ),
           ),
           // Instructions overlay
           Positioned(

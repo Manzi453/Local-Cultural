@@ -1,17 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:local/services/listing_service.dart';
 import 'package:local/theme/app_theme.dart';
 import 'package:local/views/listing_detail_screen.dart';
 import 'package:latlong2/latlong.dart';
 
-class MapViewScreen extends ConsumerWidget {
+class MapViewScreen extends ConsumerStatefulWidget {
   const MapViewScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MapViewScreen> createState() => _MapViewScreenState();
+}
+
+class _MapViewScreenState extends ConsumerState<MapViewScreen> {
+  final MapController _mapController = MapController();
+
+  void _goToCurrentLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enable location services')),
+        );
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permission denied')),
+          );
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permission permanently denied')),
+        );
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      if (!mounted) return;
+      _mapController.move(
+        LatLng(position.latitude, position.longitude),
+        16,
+      );
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Location: ${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error getting location: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final listings = ref.watch(listingsProvider);
 
     return Scaffold(
@@ -49,11 +109,19 @@ class MapViewScreen extends ConsumerWidget {
       ),
       body: listings.when(
         data: (listingsList) {
-          return FlutterMap(
-            options: MapOptions(
-              initialCenter: const LatLng(-1.9403, 29.8739), // Kigali
-              initialZoom: 12,
-            ),
+          return Stack(
+            children: [
+              FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: const LatLng(-1.9403, 29.8739),
+                  initialZoom: 12,
+                  minZoom: 5,
+                  maxZoom: 18,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.all,
+                  ),
+                ),
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -107,6 +175,50 @@ class MapViewScreen extends ConsumerWidget {
                   );
                 }).toList(),
               ),
+            ],
+          ),
+          // Zoom controls
+          Positioned(
+            right: 16,
+            bottom: 100,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: 'current_location',
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  onPressed: _goToCurrentLocation,
+                  child: const Icon(Icons.my_location, color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: 'zoom_in_view',
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  onPressed: () {
+                    _mapController.move(
+                      _mapController.camera.center,
+                      _mapController.camera.zoom + 1,
+                    );
+                  },
+                  child: const Icon(Icons.add, color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton(
+                  mini: true,
+                  heroTag: 'zoom_out_view',
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  onPressed: () {
+                    _mapController.move(
+                      _mapController.camera.center,
+                      _mapController.camera.zoom - 1,
+                    );
+                  },
+                  child: const Icon(Icons.remove, color: Colors.white),
+                ),
+              ],
+            ),
+          ),
             ],
           );
         },
