@@ -8,7 +8,6 @@ A Flutter mobile application for discovering and managing local businesses, serv
 - **Business Directory**: Browse and search local listings by name, category, or description
 - **Category Filtering**: Filter places by categories (Hospital, Police Station, Restaurant, Café, Park, Hotel, Bank, Pharmacy, Shopping Mall, School, Library, Tourist Attraction, Other)
 - **Map View**: View all listings on an interactive OpenStreetMap
-- **QR Code Generation**: Generate QR codes for each listing for easy sharing
 - **User Listings**: Create, edit, and manage your own business listings
 - **Share Listings**: Share listings via external apps using the share functionality
 
@@ -154,7 +153,6 @@ Key dependencies used in this project:
 - `flutter_map: ^7.0.2` - OpenStreetMap integration
 - `latlong2: ^0.9.1` - Geographic coordinates
 - `geolocator: ^12.0.0` - Location services
-- `qr_flutter: ^4.1.0` - QR code generation
 - `share_plus: ^12.0.1` - Share functionality
 - `google_fonts: ^6.1.0` - Typography
 
