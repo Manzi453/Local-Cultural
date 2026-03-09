@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:local/services/auth_service.dart';
-import 'package:local/services/data_seeder.dart';
-import 'package:local/views/main_navigation.dart';
-import 'package:local/views/login_screen.dart';
-import 'package:local/views/verify_email_screen.dart';
+import '../services/auth_service.dart';
+import '../services/data_seeder.dart';
+import 'main_navigation.dart';
+import 'login_screen.dart';
+import 'verify_email_screen.dart';
 
 class AuthWrapper extends ConsumerWidget {
   const AuthWrapper({super.key});

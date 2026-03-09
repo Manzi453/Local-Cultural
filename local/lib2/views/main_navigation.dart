@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:local/views/home_screen.dart';
-import 'package:local/views/my_listings_screen.dart';
-import 'package:local/views/map_view_screen.dart';
-import 'package:local/views/settings_screen.dart';
+import 'home_screen.dart';
+import 'my_listings_screen.dart';
+import 'map_view_screen.dart';
+import 'settings_screen.dart';
 
 // Provider for current navigation index
 final navigationIndexProvider = StateProvider<int>((ref) => 0);

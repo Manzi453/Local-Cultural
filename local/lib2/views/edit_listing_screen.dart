@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:local/models/listing.dart';
-import 'package:local/services/listing_service.dart';
-import 'package:local/views/map_screen.dart';
+import '../models/listing.dart';
+import '../services/listing_service.dart';
+import 'map_screen.dart';
 import 'package:geolocator/geolocator.dart';
 
 class EditListingScreen extends ConsumerStatefulWidget {

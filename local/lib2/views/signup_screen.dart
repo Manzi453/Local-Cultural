@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:local/services/auth_service.dart';
-import 'package:local/views/signup_screen.dart';
+import '../services/auth_service.dart';
+import 'verify_email_screen.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends ConsumerStatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  LoginScreenState createState() => LoginScreenState();
+  SignupScreenState createState() => SignupScreenState();
 }
 
-class LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProviderStateMixin {
+class SignupScreenState extends ConsumerState<SignupScreen> with SingleTickerProviderStateMixin {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -41,12 +43,14 @@ class LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProvi
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _animationController.dispose();
     super.dispose();
   }
 
-  void _login() async {
+  void _signUp() async {
     if (!mounted) return;
+    
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -56,14 +60,40 @@ class LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProvi
       );
       return;
     }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Color(0xFFEF4444),
+        ),
+      );
+      return;
+    }
+
+    if (_passwordController.text.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password must be at least 6 characters'),
+          backgroundColor: Color(0xFFEF4444),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
     try {
-      await ref.read(authServiceProvider).signInWithEmailAndPassword(
+      await ref.read(authServiceProvider).signUpWithEmailAndPassword(
             _emailController.text,
             _passwordController.text,
           );
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const VerifyEmailScreen()),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -108,6 +138,16 @@ class LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProvi
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // Back Button
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      
                       // Logo
                       Container(
                         width: 80,
@@ -140,7 +180,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProvi
                       
                       // Title
                       const Text(
-                        'Welcome Back',
+                        'Create Account',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -149,7 +189,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProvi
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Sign in to Kigali Directory',
+                        'Join Kigali Directory',
                         style: TextStyle(
                           fontSize: 15,
                           color: Colors.white.withValues(alpha: 0.6),
@@ -184,36 +224,50 @@ class LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProvi
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
                       
-                      // Login Button
-                      _buildGradientButton(
-                        onPressed: _login,
-                        isLoading: _isLoading,
-                        text: 'Sign In',
+                      // Confirm Password Field
+                      _buildInputField(
+                        controller: _confirmPasswordController,
+                        hintText: 'Confirm Password',
+                        prefixIcon: Icons.lock_outline,
+                        obscureText: _obscureConfirmPassword,
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                            });
+                          },
+                          icon: Icon(
+                            _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            color: Colors.black.withValues(alpha: 0.5),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 24),
                       
-                      // Sign Up Link
+                      // Sign Up Button
+                      _buildGradientButton(
+                        onPressed: _signUp,
+                        isLoading: _isLoading,
+                        text: 'Create Account',
+                      ),
+                      const SizedBox(height: 24),
+                      
+                      // Sign In Link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Don't have an account? ",
+                            'Already have an account? ',
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.6),
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const SignupScreen(),
-                                ),
-                              );
-                            },
+                            onTap: () => Navigator.of(context).pop(),
                             child: const Text(
-                              'Sign Up',
+                              'Sign In',
                               style: TextStyle(
                                 color: Color(0xFF0EA5E9),
                                 fontWeight: FontWeight.bold,

@@ -4,9 +4,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:local/services/listing_service.dart';
-import 'package:local/theme/app_theme.dart';
-import 'package:local/views/listing_detail_screen.dart';
+import '../services/listing_service.dart';
+import '../theme/app_theme.dart';
+import 'listing_detail_screen.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapViewScreen extends ConsumerStatefulWidget {

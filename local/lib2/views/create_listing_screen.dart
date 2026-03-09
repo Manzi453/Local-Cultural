@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:local/models/listing.dart';
-import 'package:local/services/auth_service.dart';
-import 'package:local/views/map_screen.dart';
-import 'package:local/services/listing_service.dart';
+import '../models/listing.dart';
+import '../services/auth_service.dart';
+import 'map_screen.dart';
+import '../services/listing_service.dart';
 
 class CreateListingScreen extends ConsumerStatefulWidget {
   const CreateListingScreen({super.key});

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:local/models/listing.dart';
-import 'package:local/services/auth_service.dart';
-import 'package:local/services/listing_service.dart';
-import 'package:local/theme/app_theme.dart';
-import 'package:local/views/edit_listing_screen.dart';
+import '../models/listing.dart';
+import '../services/auth_service.dart';
+import '../services/listing_service.dart';
+import '../theme/app_theme.dart';
+import 'edit_listing_screen.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 

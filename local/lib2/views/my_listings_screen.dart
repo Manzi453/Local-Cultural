@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:local/models/listing.dart';
-import 'package:local/services/auth_service.dart';
-import 'package:local/services/listing_service.dart';
-import 'package:local/theme/app_theme.dart';
-import 'package:local/views/create_listing_screen.dart';
-import 'package:local/views/listing_detail_screen.dart';
+import '../models/listing.dart';
+import '../services/auth_service.dart';
+import '../services/listing_service.dart';
+import '../theme/app_theme.dart';
+import 'create_listing_screen.dart';
+import 'listing_detail_screen.dart';
 
 // Provider for user's listings only
 final myListingsProvider = StreamProvider<List<Listing>>((ref) {

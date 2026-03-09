@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:local/services/auth_service.dart';
-import 'package:local/services/data_seeder.dart';
-import 'package:local/theme/app_theme.dart';
-import 'package:local/theme/theme_provider.dart';
+import '../services/auth_service.dart';
+import '../services/data_seeder.dart';
+import '../theme/app_theme.dart';
+import '../theme/theme_provider.dart';
 
 // Provider for notifications toggle state
 final notificationsEnabledProvider = StateProvider<bool>((ref) => true);

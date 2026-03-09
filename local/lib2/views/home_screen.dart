@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:local/models/listing.dart';
-import 'package:local/services/listing_service.dart';
-import 'package:local/theme/app_theme.dart';
-import 'package:local/views/create_listing_screen.dart';
-import 'package:local/views/listing_detail_screen.dart';
+import '../models/listing.dart';
+import '../services/listing_service.dart';
+import '../theme/app_theme.dart';
+import 'create_listing_screen.dart';
+import 'listing_detail_screen.dart';
 
 // Provider for search query
 final searchQueryProvider = StateProvider<String>((ref) => '');
